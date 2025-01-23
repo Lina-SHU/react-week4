@@ -1,8 +1,8 @@
-@import "../node_modules/bootstrap/scss/functions";
+@import "bootstrap/scss/functions";
 
 // 2. Include any default variable overrides here
 
 // 3. Include remainder of required Bootstrap stylesheets (including any separate color mode stylesheets)
 @import "./variables";
 @import "./variables-dark";
-@import "bootstrap";
+@import "bootstrap/scss/bootstrap";
