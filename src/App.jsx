@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import Swal from "sweetalert2";
 import { useRef } from "react";
 import { Modal } from "bootstrap";
 
 function App() {
   const {VITE_BASE_URL, VITE_API_PATH} = import.meta.env;
-  const [account, setAccount] = useState({});
+  const [account, setAccount] = useState({ username: '', password: '' });
   const [isAuth, setIsAuth] = useState(false);
   const [products, setProducts] = useState([]);
   const [pagination, setPagination] = useState({});
@@ -25,10 +26,18 @@ function App() {
   const login = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`${VITE_BASE_URL}/admin/signin`);
-      alert(res.data.message);
+      const res = await axios.post(`${VITE_BASE_URL}/admin/signin`, account);
+      
       document.cookie = `ctoken=${res.data.token}; expires=${new Date(res.data.expired)}; path=/`;
       axios.defaults.headers.common['Authorization'] = res.data.token;
+
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: res.data.message,
+        showConfirmButton: false,
+        timer: 1500
+      });
     } catch (error) {
       alert(error.response.data.message);
     }
@@ -163,7 +172,7 @@ function App() {
                     <label htmlFor="username">Email</label>
                   </div>
                   <div className="form-floating">
-                    <input type="password" className="form-control" name="password" value={account.password} id="password" placeholder="請輸入密碼" onChange={handleAccount} />
+                    <input type="password" className="form-control" name="password" value={account.password} id="password" placeholder="請輸入密碼" onChange={handleAccount} autoComplete="on" />
                     <label htmlFor="password">密碼</label>
                   </div>
                   <div className="text-center">
