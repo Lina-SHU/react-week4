@@ -15,6 +15,7 @@ const init_product = {
   description: '',
   content: '',
   unit: '',
+  location: '',
   is_enabled: false,
   imageUrl: '',
   imagesUrl: ['']
@@ -178,19 +179,28 @@ function App() {
 
   // 刪除商品
   const deleteProduct = async (prdId) => {
-    try {
-      const res = await axios.delete(`${VITE_BASE_URL}/api/${VITE_API_PATH}/admin/product/${prdId}`);
-      Swal.fire({
-        position: "center",
-        icon: "success",
-        title: res.data.message,
-        showConfirmButton: false,
-        timer: 1500
-      });
-      getProducts();
-    } catch (error) {
-      alert(error.response.data.message);
-    }
+    Swal.fire({
+      title: "確認刪除此商品？",
+      showCancelButton: true,
+      confirmButtonText: "刪除",
+      cancelButtonText: `取消`
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const res = await axios.delete(`${VITE_BASE_URL}/api/${VITE_API_PATH}/admin/product/${prdId}`);
+          Swal.fire({
+            position: "center",
+            icon: "success",
+            title: res.data.message,
+            showConfirmButton: false,
+            timer: 1500
+          });
+          getProducts();
+        } catch (error) {
+          alert(error.response.data.message);
+        }
+      }
+    });
   };
 
   // 登出
@@ -257,7 +267,7 @@ function App() {
           </div>
           
           {/* 新增/編輯 Modal */}
-          <EditModal editModalRef={editModalRef} tempProduct={tempProduct} closeModal={closeModal} handleProductInfo={handleProductInfo} handleImage={handleImage} addImage={addImage} deleteImage={deleteImage} editProduct={editProduct} />
+          <EditModal editModalRef={editModalRef} tempProduct={tempProduct} closeModal={closeModal} handleProductInfo={handleProductInfo} handleImage={handleImage} addImage={addImage} deleteImage={deleteImage} editProduct={editProduct} setTempProduct={setTempProduct} />
         </>) : (
           <div className="container mt-5">
             <div className="row justify-content-center">

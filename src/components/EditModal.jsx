@@ -1,6 +1,36 @@
 import PropTypes from 'prop-types';
+import axios from 'axios';
+import Swal from 'sweetalert2';
+import { useState } from 'react';
 
-function EditModal({ editModalRef, tempProduct, closeModal, handleProductInfo, handleImage, addImage, deleteImage, editProduct }) {
+function EditModal({ editModalRef, tempProduct, closeModal, handleProductInfo, handleImage, addImage, deleteImage, editProduct, setTempProduct }) {
+    const {VITE_BASE_URL, VITE_API_PATH} = import.meta.env;
+    const [imageSelected, setImageSelected] = useState(null);
+    const chooseImage = (e) => {
+      const fd = new FormData();
+      fd.append('file', e.target.files[0]);
+      setImageSelected(fd);
+    };
+
+    const uploadImage = async () => {
+      try {
+        const res = await axios.post(`${VITE_BASE_URL}/api/${VITE_API_PATH}/admin/upload`, imageSelected);
+        setTempProduct({
+          ...tempProduct,
+          imageUrl: res.data.imageUrl
+        });
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: '上傳成功！',
+          showConfirmButton: false,
+          timer: 1500
+        });
+      } catch (error) {
+        alert(error.response.message?.message);
+      }
+    };
+
     return (
             <div className="modal fade" ref={editModalRef} id="editModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
               <div className="modal-dialog modal-dialog-centered modal-xl">
@@ -39,7 +69,17 @@ function EditModal({ editModalRef, tempProduct, closeModal, handleProductInfo, h
                         <label htmlFor="content" className="form-label mb-1">商品內容</label>
                         <textarea className="form-control" id="content" name="content" placeholder="請輸入商品內容" value={tempProduct.content} onChange={handleProductInfo} />
                       </div>
-                      <div className="col-12 mb-2">
+                      <div className="col-6 mb-2">
+                        <label htmlFor="description" className="form-label mb-1">所屬地區</label>
+                        <select className="form-select" name="location" value={tempProduct.location} onChange={handleProductInfo}>
+                          <option value="" disabled>請選擇</option>
+                          <option value="北部">北部</option>
+                          <option value="中部">中部</option>
+                          <option value="南部">南部</option>
+                          <option value="東部">東部</option>
+                        </select>
+                      </div>
+                      <div className="col-6 mb-2">
                         <div className="form-check">
                           <input className="form-check-input" type="checkbox" id="is_enabled" name="is_enabled" checked={tempProduct.is_enabled} onChange={handleProductInfo} />
                           <label className="form-check-label" htmlFor="is_enabled">
@@ -49,7 +89,10 @@ function EditModal({ editModalRef, tempProduct, closeModal, handleProductInfo, h
                       </div>
                       <div className="col-4">
                           <label htmlFor="imageUrl" className="form-label mb-1">商品主圖</label>
-                          <input type="text" className="form-control" id="imageUrl" name="imageUrl" value={tempProduct.imageUrl} onChange={handleProductInfo} />
+                          <div className="input-group">
+                            <input type="file" className="form-control" id="imageUrl" onChange={(e) => chooseImage(e)}/>
+                            <button className="btn btn-outline-secondary" type="button" onClick={uploadImage}>上傳</button>
+                          </div>
                           <img src={tempProduct.imageUrl} className="img-fluid" alt={tempProduct.title} />
                       </div>
                       <div className="col-8">
@@ -100,5 +143,6 @@ EditModal.propTypes = {
     handleImage: PropTypes.func,
     addImage: PropTypes.func,
     deleteImage: PropTypes.func,
-    editProduct: PropTypes.func
+    editProduct: PropTypes.func,
+    setTempProduct: PropTypes.func
 };
