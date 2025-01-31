@@ -1,6 +1,12 @@
 import PropTypes from 'prop-types';
 
 function Pagination ({ pagination, handlePage, getProducts }) {
+
+    const changePage = (e, page) => {
+        e.preventDefault();
+        getProducts(page);
+    };
+
     return (
         <nav>
             <ul className="pagination">
@@ -11,7 +17,7 @@ function Pagination ({ pagination, handlePage, getProducts }) {
                 pagination && new Array(pagination?.total_pages).fill(0).map((_, i) => i + 1).map((page) => {
                 return (
                     <li key={page} className={pagination?.current_page === page ? 'page-item active' : 'page-item'}>
-                    <a className="page-link" href="#" onClick={() => getProducts(page)}>{page}</a>
+                    <a className="page-link" href="#" onClick={(e) => changePage(e, page)}>{page}</a>
                     </li>
                 )
                 })
