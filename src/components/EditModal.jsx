@@ -3,9 +3,47 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import { useState } from 'react';
 
-function EditModal({ editModalRef, tempProduct, closeModal, handleProductInfo, handleImage, addImage, deleteImage, editProduct, setTempProduct }) {
+function EditModal({ editModalRef, tempProduct, closeModal, editProduct, setTempProduct }) {
     const {VITE_BASE_URL, VITE_API_PATH} = import.meta.env;
     const [imageSelected, setImageSelected] = useState(null);
+
+    // 編輯商品
+    const handleProductInfo = (e) => {
+      const { name, value, type, checked } = e.target;
+
+      setTempProduct({
+        ...tempProduct,
+        [name]: type === 'checkbox' ? checked : value
+      })
+    };
+
+    const handleImage = (e, idx) => {
+      const images = [...tempProduct.imagesUrl];
+      images[idx] = e.target.value;
+      setTempProduct({
+        ...tempProduct,
+        imagesUrl: images
+      });
+    };
+
+    const addImage = () => {
+      const images = [...tempProduct.imagesUrl];
+      images.push('');
+      setTempProduct({
+        ...tempProduct,
+        imagesUrl: images
+      });
+    };
+  
+    const deleteImage = () => {
+      const images = [...tempProduct.imagesUrl];
+      images.pop();
+      setTempProduct({
+        ...tempProduct,
+        imagesUrl: images
+      });
+    };
+
     const chooseImage = (e) => {
       const fd = new FormData();
       fd.append('file', e.target.files[0]);
@@ -139,10 +177,6 @@ EditModal.propTypes = {
     editModalRef: PropTypes.object,
     tempProduct: PropTypes.object,
     closeModal: PropTypes.func,
-    handleProductInfo: PropTypes.func,
-    handleImage: PropTypes.func,
-    addImage: PropTypes.func,
-    deleteImage: PropTypes.func,
     editProduct: PropTypes.func,
     setTempProduct: PropTypes.func
 };

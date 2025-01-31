@@ -106,50 +106,13 @@ function App() {
 
   // 開啟新增/編輯 Modal
   const openEditModal = (prd) => {
-    const tempPrd = prd ? {...prd, is_enabled: prd.is_enabled === 1 ? true: false} : init_product;
+    const tempPrd = prd ? { ...prd } : init_product;
     setTempProduct(tempPrd);
     editModal.current.show();
   };
 
   const closeModal = () => {
     editModal.current.hide();
-  };
-
-  // 編輯商品
-  const handleProductInfo = (e) => {
-    const { name, value, type, checked } = e.target;
-
-    setTempProduct({
-      ...tempProduct,
-      [name]: type === 'checkbox' ? checked : value
-    })
-  };
-
-  const handleImage = (e, idx) => {
-    const images = [...tempProduct.imagesUrl];
-    images[idx] = e.target.value;
-    setTempProduct({
-      ...tempProduct,
-      imagesUrl: images
-    });
-  };
-
-  const addImage = () => {
-    const images = [...tempProduct.imagesUrl];
-    images.push('');
-    setTempProduct({
-      ...tempProduct,
-      imagesUrl: images
-    });
-  };
-
-  const deleteImage = () => {
-    const images = [...tempProduct.imagesUrl];
-    images.pop();
-    setTempProduct({
-      ...tempProduct,
-      imagesUrl: images
-    });
   };
 
   // 新增/編輯商品
@@ -267,7 +230,7 @@ function App() {
           </div>
           
           {/* 新增/編輯 Modal */}
-          <EditModal editModalRef={editModalRef} tempProduct={tempProduct} closeModal={closeModal} handleProductInfo={handleProductInfo} handleImage={handleImage} addImage={addImage} deleteImage={deleteImage} editProduct={editProduct} setTempProduct={setTempProduct} />
+          <EditModal editModalRef={editModalRef} tempProduct={tempProduct} closeModal={closeModal} editProduct={editProduct} setTempProduct={setTempProduct} />
         </>) : (
           <div className="container mt-5">
             <div className="row justify-content-center">
