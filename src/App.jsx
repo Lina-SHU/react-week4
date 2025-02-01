@@ -21,8 +21,9 @@ const init_product = {
   imagesUrl: ['']
 };
 
+const {VITE_BASE_URL, VITE_API_PATH} = import.meta.env;
+
 function App() {
-  const {VITE_BASE_URL, VITE_API_PATH} = import.meta.env;
   const [account, setAccount] = useState({ username: '', password: '' });
   const [isAuth, setIsAuth] = useState(false);
   const [products, setProducts] = useState([]);
@@ -55,6 +56,7 @@ function App() {
         showConfirmButton: false,
         timer: 1500
       });
+      getProducts();
     } catch (error) {
       alert(error.response.data.message);
     }
@@ -89,16 +91,6 @@ function App() {
     }
   };
 
-  // 換頁
-  const handlePage = (e, type) => {
-    e.preventDefault();
-    if (type === 'prev') {
-      getProducts(pagination.current_page - 1);
-    } else {
-      getProducts(pagination.current_page + 1);
-    }
-  };
-
   useEffect(() => {
     if (!isAuth) return;
     editModal.current = new Modal(editModalRef.current, { backdrop: 'static' });
@@ -106,7 +98,7 @@ function App() {
 
   // 開啟新增/編輯 Modal
   const openEditModal = (prd) => {
-    const tempPrd = prd ? { ...prd } : init_product;
+    const tempPrd = prd ? { ...prd, is_enabled: prd.is_enabled === 1 ? true : false } : init_product;
     setTempProduct(tempPrd);
     editModal.current.show();
   };
@@ -124,7 +116,7 @@ function App() {
         api_method = 'put';
         api_url = `${VITE_BASE_URL}/api/${VITE_API_PATH}/admin/product/${tempProduct.id}`;
       }
-      const data = {...tempProduct, origin_price: parseInt(tempProduct.origin_price), price: parseInt(tempProduct.price)};
+      const data = { ...tempProduct, origin_price: parseInt(tempProduct.origin_price), price: parseInt(tempProduct.price), is_enabled: tempProduct.is_enabled ? 1 : 0 };
       const res = await axios[api_method](api_url, { data });
       Swal.fire({
         position: "center",
@@ -226,7 +218,7 @@ function App() {
                 }
               </tbody>
             </table>
-            <Pagination pagination={pagination} handlePage={handlePage} getProducts={getProducts} />
+            <Pagination pagination={pagination} getProducts={getProducts} />
           </div>
           
           {/* 新增/編輯 Modal */}

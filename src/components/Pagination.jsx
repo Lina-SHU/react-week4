@@ -1,6 +1,15 @@
 import PropTypes from 'prop-types';
 
-function Pagination ({ pagination, handlePage, getProducts }) {
+function Pagination ({ pagination, getProducts }) {
+    // 換頁
+    const handlePage = (e, type) => {
+        e.preventDefault();
+        if (type === 'prev') {
+            getProducts(pagination.current_page - 1);
+        } else {
+            getProducts(pagination.current_page + 1);
+        }
+    };
 
     const changePage = (e, page) => {
         e.preventDefault();

@@ -1,11 +1,16 @@
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+const {VITE_BASE_URL, VITE_API_PATH} = import.meta.env;
 
 function EditModal({ editModalRef, tempProduct, closeModal, editProduct, setTempProduct }) {
-    const {VITE_BASE_URL, VITE_API_PATH} = import.meta.env;
     const [imageSelected, setImageSelected] = useState(null);
+    const fileInputRef = useRef(null);
+
+    useEffect(() => {
+      fileInputRef.current.value = null;
+    }, [tempProduct]);
 
     // 編輯商品
     const handleProductInfo = (e) => {
@@ -108,8 +113,8 @@ function EditModal({ editModalRef, tempProduct, closeModal, editProduct, setTemp
                         <textarea className="form-control" id="content" name="content" placeholder="請輸入商品內容" value={tempProduct.content} onChange={handleProductInfo} />
                       </div>
                       <div className="col-6 mb-2">
-                        <label htmlFor="description" className="form-label mb-1">所屬地區</label>
-                        <select className="form-select" name="location" value={tempProduct.location} onChange={handleProductInfo}>
+                        <label htmlFor="location" className="form-label mb-1">所屬地區</label>
+                        <select id="location" className="form-select" name="location" value={tempProduct.location} onChange={handleProductInfo}>
                           <option value="" disabled>請選擇</option>
                           <option value="北部">北部</option>
                           <option value="中部">中部</option>
@@ -128,10 +133,12 @@ function EditModal({ editModalRef, tempProduct, closeModal, editProduct, setTemp
                       <div className="col-4">
                           <label htmlFor="imageUrl" className="form-label mb-1">商品主圖</label>
                           <div className="input-group">
-                            <input type="file" className="form-control" id="imageUrl" onChange={(e) => chooseImage(e)}/>
+                            <input type="file" ref={fileInputRef} className="form-control" id="imageUrl" onChange={(e) => chooseImage(e)}/>
                             <button className="btn btn-outline-secondary" type="button" onClick={uploadImage}>上傳</button>
                           </div>
-                          <img src={tempProduct.imageUrl} className="img-fluid" alt={tempProduct.title} />
+                          {
+                            tempProduct.imageUrl && (<img src={tempProduct.imageUrl} className="img-fluid" alt={tempProduct.title} />)
+                          }
                       </div>
                       <div className="col-8">
                           <label htmlFor="imageUrl" className="form-label mb-1">商品圖片</label>
@@ -141,7 +148,9 @@ function EditModal({ editModalRef, tempProduct, closeModal, editProduct, setTemp
                                 return (
                                   <div className="col-6" key={idx}>
                                     <input type="text" className="form-control" value={img} onChange={(e) => handleImage(e, idx)} />
-                                    <img src={img} className="img-fluid" alt="商品圖片" />
+                                    {
+                                      img && (<img src={img} className="img-fluid" alt="商品圖片" />)
+                                    }
                                   </div>
                                 )
                               })
